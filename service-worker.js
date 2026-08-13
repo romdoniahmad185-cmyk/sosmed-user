@@ -2,7 +2,7 @@ const CACHE_NAME = "creator-viewer-v1";
 
 const FILES_TO_CACHE = [
     "./",
-    "./index.html",
+    "./user.html",
     "./manifest.json",
     "./icon-192.png",
     "./icon-512.png"
