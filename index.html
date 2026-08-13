@@ -2633,6 +2633,33 @@ showCollection("all");
 renderSocial();
 
 </script>
+<script>
+if ("serviceWorker" in navigator) {
 
+    window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(registration => {
+
+                console.log(
+                    "CreatorView Service Worker aktif:",
+                    registration.scope
+                );
+
+            })
+            .catch(error => {
+
+                console.error(
+                    "CreatorView Service Worker gagal:",
+                    error
+                );
+
+            });
+
+    });
+
+}
+</script>
 </body>
 </html>
