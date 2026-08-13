@@ -1,31 +1,25 @@
 {
   "name": "Creator Viewer",
   "short_name": "Viewer",
-  "description": "Aplikasi viewer untuk melihat koleksi foto, video, YouTube, TikTok, dan Instagram dari Creator.",
-  "dir": "ltr",
-  "lang": "id-ID",
+  "description": "Creator Viewer - Aplikasi untuk melihat koleksi foto, video, YouTube, TikTok, dan Instagram dari Creator",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "./",
-  "start_url": "./user.html",
   "background_color": "#050817",
   "theme_color": "#111827",
-  "categories": [
-    "entertainment",
-    "social"
-  ],
   "icons": [
     {
       "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
