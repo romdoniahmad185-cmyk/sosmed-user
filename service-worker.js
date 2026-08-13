@@ -8,11 +8,6 @@ const FILES_TO_CACHE = [
     "./icon-512.png"
 ];
 
-
-/* ================================
-   INSTALL
-================================ */
-
 self.addEventListener("install", event => {
 
     event.waitUntil(
@@ -20,8 +15,26 @@ self.addEventListener("install", event => {
         caches.open(CACHE_NAME)
             .then(cache => {
 
-                return cache.addAll(
-                    FILES_TO_CACHE
+                return Promise.all(
+                    FILES_TO_CACHE.map(file => {
+
+                        return fetch(file)
+                            .then(response => {
+
+                                if (!response.ok) {
+                                    throw new Error(
+                                        `Gagal cache: ${file}`
+                                    );
+                                }
+
+                                return cache.put(
+                                    file,
+                                    response
+                                );
+
+                            });
+
+                    })
                 );
 
             })
@@ -32,10 +45,6 @@ self.addEventListener("install", event => {
 
 });
 
-
-/* ================================
-   ACTIVATE
-================================ */
 
 self.addEventListener("activate", event => {
 
@@ -48,14 +57,12 @@ self.addEventListener("activate", event => {
 
                     cacheNames
                         .filter(
-                            cacheName =>
-                                cacheName !== CACHE_NAME
+                            name =>
+                                name !== CACHE_NAME
                         )
                         .map(
-                            cacheName =>
-                                caches.delete(
-                                    cacheName
-                                )
+                            name =>
+                                caches.delete(name)
                         )
 
                 );
@@ -69,91 +76,53 @@ self.addEventListener("activate", event => {
 });
 
 
-/* ================================
-   FETCH
-================================ */
-
 self.addEventListener("fetch", event => {
 
-    const request = event.request;
-
-    /*
-       Hanya menangani request GET.
-    */
-
-    if (request.method !== "GET") {
+    if (event.request.method !== "GET") {
         return;
     }
 
-
     event.respondWith(
 
-        caches.match(request)
-            .then(cachedResponse => {
+        caches.match(event.request)
+            .then(cached => {
 
-                /*
-                   Kalau ada di cache,
-                   gunakan cache.
-                */
-
-                if (cachedResponse) {
-
-                    return cachedResponse;
-
+                if (cached) {
+                    return cached;
                 }
 
-
-                /*
-                   Kalau belum ada,
-                   ambil dari internet.
-                */
-
-                return fetch(request)
-                    .then(networkResponse => {
-
-                        /*
-                           Simpan response yang valid
-                           ke cache.
-                        */
+                return fetch(event.request)
+                    .then(response => {
 
                         if (
-                            networkResponse &&
-                            networkResponse.status === 200 &&
-                            networkResponse.type === "basic"
+                            response.ok &&
+                            response.type === "basic"
                         ) {
 
-                            const responseClone =
-                                networkResponse.clone();
+                            const clone =
+                                response.clone();
 
-                            caches.open(
-                                CACHE_NAME
-                            )
-                            .then(cache => {
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
 
-                                cache.put(
-                                    request,
-                                    responseClone
-                                );
+                                    cache.put(
+                                        event.request,
+                                        clone
+                                    );
 
-                            });
+                                });
 
                         }
 
-                        return networkResponse;
+                        return response;
 
                     });
 
             })
-
             .catch(() => {
 
-                /*
-                   Jika internet mati dan halaman
-                   tidak tersedia di cache.
-                */
-
                 return caches.match(
-                    "./index.html"
+                    "./user.html"
                 );
 
             })
